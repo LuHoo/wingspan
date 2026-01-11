@@ -2,11 +2,11 @@ const MAX_PLAYERS = 5;
 
 const scoreFields = [
   { key: "birds", label: "Birds" },
-  { key: "bonus", label: "Bonus cards" },
-  { key: "rounds", label: "End-of-round goals" },
+  { key: "bonus", label: "Bonus" },
+  { key: "endGoals", label: "End of round goals" },
   { key: "eggs", label: "Eggs" },
-  { key: "food", label: "Food on cards" },
-  { key: "tucked", label: "Tucked cards" }
+  { key: "food", label: "Food" },
+  { key: "tucked", label: "Tucked" }
 ];
 
 function calculateTotal(player) {
@@ -35,19 +35,39 @@ function render() {
 
   app.innerHTML = `
     <form id="score-form">
-      ${[...Array(MAX_PLAYERS)].map((_, i) => `
-        <fieldset>
-          <legend>Player ${i + 1}</legend>
-          <input type="text" name="name-${i}" placeholder="Name" />
-
-          ${scoreFields.map(field => `
-            <label>
-              ${field.label}
-              <input type="number" min="0" name="${field.key}-${i}" value="0" />
-            </label>
-          `).join("")}
-        </fieldset>
-      `).join("")}
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Player</th>
+              ${scoreFields.map(f => `<th>${f.label}</th>`).join("")}
+            </tr>
+          </thead>
+          <tbody>
+            ${[...Array(MAX_PLAYERS)].map((_, i) => `
+              <tr>
+                <td>
+                  <input
+                    type="text"
+                    name="name-${i}"
+                    placeholder="Player ${i + 1}"
+                  />
+                </td>
+                ${scoreFields.map(field => `
+                  <td>
+                    <input
+                      type="number"
+                      min="0"
+                      name="${field.key}-${i}"
+                      value="0"
+                    />
+                  </td>
+                `).join("")}
+              </tr>
+            `).join("")}
+          </tbody>
+        </table>
+      </div>
 
       <button type="submit">Calculate ranking</button>
     </form>
@@ -80,8 +100,7 @@ function handleSubmit(event) {
     players.push(player);
   }
 
-  const ranked = rankPlayers(players);
-  renderResult(ranked);
+  renderResult(rankPlayers(players));
 }
 
 function renderResult(players) {
@@ -94,13 +113,24 @@ function renderResult(players) {
 
   result.innerHTML = `
     <h2>Final ranking</h2>
-    <ol>
-      ${players.map(p => `
-        <li>
-          ${p.name} — ${p.total} points
-        </li>
-      `).join("")}
-    </ol>
+    <table class="results">
+      <thead>
+        <tr>
+          <th>Rank</th>
+          <th>Player</th>
+          <th>Total</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${players.map(p => `
+          <tr>
+            <td>${p.rank}</td>
+            <td>${p.name}</td>
+            <td>${p.total}</td>
+          </tr>
+        `).join("")}
+      </tbody>
+    </table>
   `;
 }
 
