@@ -33,6 +33,7 @@ function rankPlayers(players) {
 function render() {
   const app = document.getElementById("app");
 
+  // volledige render van formulier en tabel
   app.innerHTML = `
     <form id="score-form">
       <div class="table-wrapper">
@@ -41,6 +42,7 @@ function render() {
             <tr>
               <th>Player</th>
               ${scoreFields.map(f => `<th>${f.label}</th>`).join("")}
+              <th>Total</th>
             </tr>
           </thead>
           <tbody>
@@ -63,21 +65,25 @@ function render() {
                     />
                   </td>
                 `).join("")}
+                <td class="total-cell">0</td>
               </tr>
             `).join("")}
           </tbody>
         </table>
       </div>
-
       <button type="submit">Calculate ranking</button>
     </form>
-
     <div id="result"></div>
   `;
 
+  // bind submit
   document
     .getElementById("score-form")
     .addEventListener("submit", handleSubmit);
+
+  // bind extra features
+  enableAutoSelect();
+  enableLiveTotals();
 }
 
 function handleSubmit(event) {
@@ -134,20 +140,37 @@ function renderResult(players) {
   `;
 }
 
-render();
-enableAutoSelect();
-
+// selecteer hele waarde bij focus
 function enableAutoSelect() {
-  const inputs = document.querySelectorAll(
-    'input[type="number"]'
-  );
-
+  const inputs = document.querySelectorAll('input[type="number"]');
   inputs.forEach(input => {
     input.addEventListener('focus', () => {
-      // kleine delay nodig voor mobiel
-      setTimeout(() => {
-        input.select();
-      }, 0);
+      setTimeout(() => input.select(), 0);
     });
   });
 }
+
+// live totals per speler, bindings idempotent
+function enableLiveTotals() {
+  const rows = document.querySelectorAll("tbody tr");
+
+  rows.forEach(row => {
+    const inputs = row.querySelectorAll('input[type="number"]');
+    const totalCell = row.querySelector(".total-cell");
+
+    inputs.forEach(input => {
+      if (!input.dataset.liveTotalBound) {
+        input.addEventListener("input", () => {
+          const total = Array.from(inputs).reduce((sum, inp) => {
+            return sum + (Number(inp.value) || 0);
+          }, 0);
+          totalCell.textContent = total;
+        });
+        input.dataset.liveTotalBound = "true";
+      }
+    });
+  });
+}
+
+// initial render
+render();
