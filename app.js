@@ -59,7 +59,7 @@ function render() {
                       type="number"
                       min="0"
                       name="${field.key}-${i}"
-                      value="0"
+                      placeholder="0"
                     />
                   </td>
                 `).join("")}
@@ -135,3 +135,19 @@ function renderResult(players) {
 }
 
 render();
+enableAutoSelect();
+
+function enableAutoSelect() {
+  const inputs = document.querySelectorAll(
+    'input[type="number"]'
+  );
+
+  inputs.forEach(input => {
+    input.addEventListener('focus', () => {
+      // kleine delay nodig voor mobiel
+      setTimeout(() => {
+        input.select();
+      }, 0);
+    });
+  });
+}
