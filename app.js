@@ -1,8 +1,9 @@
 const MAX_PLAYERS = 5;
 
 const scoreFields = [
-  { key: "birds", label: "Bird cards" },
+  { key: "birds", label: "Birds" },
   { key: "bonus", label: "Bonus cards" },
+  { key: "rounds", label: "End-of-round goals" },
   { key: "eggs", label: "Eggs" },
   { key: "food", label: "Food on cards" },
   { key: "tucked", label: "Tucked cards" }
